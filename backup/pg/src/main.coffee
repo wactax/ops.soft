@@ -14,6 +14,7 @@ ROOT = dirname uridir(import.meta)
 
 bucket='sj-backup:backup'
 
+
 rmOutdate = =>
   {stdout} = await $"rclone lsjson #{bucket}"
 
@@ -26,6 +27,7 @@ rmOutdate = =>
       if ym
         if (nowym - (parseInt(ym/100)*12+ym%100))>3
           await $"rclone delete #{bucket+'/'+ym}"
+
 
 dump = (uri)=>
   if not uri
@@ -66,7 +68,6 @@ dump = (uri)=>
       # $"#{ROOT}/pg/data.sh #{bucket} #{db} #{schema_name}"
     ]
   return
-
 
 
 await Promise.all [
