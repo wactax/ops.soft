@@ -69,7 +69,7 @@ ALTER SEQUENCE img.genway_id_seq OWNED BY img.genway.id;
 
 CREATE TABLE img.model_name_hash (
     id bigint NOT NULL,
-    name text NOT NULL,
+    val text NOT NULL,
     hash text NOT NULL
 );
 
@@ -181,7 +181,7 @@ ALTER TABLE ONLY img.genway
 
 
 ALTER TABLE ONLY img.model_name_hash
-    ADD CONSTRAINT model_name_hash_name_hash_key UNIQUE (name, hash);
+    ADD CONSTRAINT model_name_hash_name_hash_key UNIQUE (val, hash);
 
 
 
