@@ -72,7 +72,6 @@ dump = (uri)=>
 
 await Promise.all [
   ENV.PG_URI
-  ENV.NN_URI
 ].map dump
 
 cd BACKUP_TABLE
