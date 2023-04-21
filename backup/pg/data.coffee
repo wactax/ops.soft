@@ -12,7 +12,7 @@ ROOT = uridir(import.meta)
 DATA = join(ROOT, 'data')
 
 dump = (schema)=>
-  await $"pg_dump postgres://#{PG_URI} --data-only -n #{schema} -f #{DATA}/#{schema}.tar -F c"
+  await $"pg_dump postgres://#{PG_URI} --data-only -n #{schema} -Fc -Z0 | zstd > #{DATA}/#{schema}.zstd"
   return
 
 < default main = =>
