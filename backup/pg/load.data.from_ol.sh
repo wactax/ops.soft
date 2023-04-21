@@ -23,5 +23,5 @@ load(){
 }
 
 load $PG_URI
-load $NN_URI
+# load $NN_URI
 
