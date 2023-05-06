@@ -276,7 +276,7 @@ CREATE TABLE bot.task (
 
 
 
-COMMENT ON TABLE bot.task IS 'null 是 完成， 0 是未开始， 有值为开始时间，timeout之后会重试，并增加err，err>10 就放弃重试。成功会将err清空。所有列都成功会触发推送到索引表。';
+COMMENT ON TABLE bot.task IS 'null 是 完成， 0 是未开始， 有值为开始时间，timeout之后会重试，并增加err，err>10 就放弃重试。成功会将err清空。当update的时候，如果err没有变化，会推送给订阅者实现实时触发。';
 
 
 
