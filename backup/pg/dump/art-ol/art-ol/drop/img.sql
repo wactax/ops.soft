@@ -11,6 +11,11 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP INDEX IF EXISTS img."prompt.hash";
+DROP INDEX IF EXISTS img."nprompt.hash";
+DROP INDEX IF EXISTS img."model_name_hash.hash";
+ALTER TABLE IF EXISTS ONLY img.tag_en DROP CONSTRAINT IF EXISTS tag_en_val_key;
+ALTER TABLE IF EXISTS ONLY img.tag_en DROP CONSTRAINT IF EXISTS tag_en_pkey;
 ALTER TABLE IF EXISTS ONLY img.sampler DROP CONSTRAINT IF EXISTS sampler_pkey;
 ALTER TABLE IF EXISTS ONLY img.sampler DROP CONSTRAINT IF EXISTS sampler_name_key;
 ALTER TABLE IF EXISTS ONLY img.prompt DROP CONSTRAINT IF EXISTS prompt_pkey;
@@ -18,14 +23,16 @@ ALTER TABLE IF EXISTS ONLY img.prompt DROP CONSTRAINT IF EXISTS prompt_hash_key;
 ALTER TABLE IF EXISTS ONLY img.nprompt DROP CONSTRAINT IF EXISTS nprompt_pkey;
 ALTER TABLE IF EXISTS ONLY img.nprompt DROP CONSTRAINT IF EXISTS nprompt_hash_key;
 ALTER TABLE IF EXISTS ONLY img.model_name_hash DROP CONSTRAINT IF EXISTS model_name_hash_pkey;
-ALTER TABLE IF EXISTS ONLY img.model_name_hash DROP CONSTRAINT IF EXISTS model_name_hash_name_hash_key;
 ALTER TABLE IF EXISTS ONLY img.genway DROP CONSTRAINT IF EXISTS genway_pkey;
 ALTER TABLE IF EXISTS ONLY img.genway DROP CONSTRAINT IF EXISTS genway_name_key;
+ALTER TABLE IF EXISTS img.tag_en ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS img.sampler ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS img.prompt ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS img.nprompt ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS img.model_name_hash ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS img.genway ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS img.tag_en_id_seq;
+DROP TABLE IF EXISTS img.tag_en;
 DROP SEQUENCE IF EXISTS img.sampler_id_seq;
 DROP TABLE IF EXISTS img.sampler;
 DROP SEQUENCE IF EXISTS img.prompt_id_seq;
@@ -70,7 +77,7 @@ ALTER SEQUENCE img.genway_id_seq OWNED BY img.genway.id;
 CREATE TABLE img.model_name_hash (
     id public.u64 NOT NULL,
     val text NOT NULL,
-    hash text NOT NULL
+    hash bytea
 );
 
 
@@ -150,6 +157,26 @@ ALTER SEQUENCE img.sampler_id_seq OWNED BY img.sampler.id;
 
 
 
+CREATE TABLE img.tag_en (
+    id bigint NOT NULL,
+    val text NOT NULL
+);
+
+
+
+CREATE SEQUENCE img.tag_en_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+ALTER SEQUENCE img.tag_en_id_seq OWNED BY img.tag_en.id;
+
+
+
 ALTER TABLE ONLY img.genway ALTER COLUMN id SET DEFAULT nextval('img.genway_id_seq'::regclass);
 
 
@@ -170,6 +197,10 @@ ALTER TABLE ONLY img.sampler ALTER COLUMN id SET DEFAULT nextval('img.sampler_id
 
 
 
+ALTER TABLE ONLY img.tag_en ALTER COLUMN id SET DEFAULT nextval('img.tag_en_id_seq'::regclass);
+
+
+
 ALTER TABLE ONLY img.genway
     ADD CONSTRAINT genway_name_key UNIQUE (name);
 
@@ -177,11 +208,6 @@ ALTER TABLE ONLY img.genway
 
 ALTER TABLE ONLY img.genway
     ADD CONSTRAINT genway_pkey PRIMARY KEY (id);
-
-
-
-ALTER TABLE ONLY img.model_name_hash
-    ADD CONSTRAINT model_name_hash_name_hash_key UNIQUE (val, hash);
 
 
 
@@ -217,6 +243,28 @@ ALTER TABLE ONLY img.sampler
 
 ALTER TABLE ONLY img.sampler
     ADD CONSTRAINT sampler_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY img.tag_en
+    ADD CONSTRAINT tag_en_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY img.tag_en
+    ADD CONSTRAINT tag_en_val_key UNIQUE (val);
+
+
+
+CREATE UNIQUE INDEX "model_name_hash.hash" ON img.model_name_hash USING btree (hash);
+
+
+
+CREATE UNIQUE INDEX "nprompt.hash" ON img.nprompt USING btree (hash);
+
+
+
+CREATE UNIQUE INDEX "prompt.hash" ON img.prompt USING btree (hash);
 
 
 

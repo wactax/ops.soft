@@ -4,6 +4,6 @@ DIR=$(dirname $(realpath "$0"))
 cd $DIR
 
 set -o allexport
-source ./env
+source ./.env
 set +o allexport
 ./data.coffee

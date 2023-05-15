@@ -126,10 +126,18 @@ COMMENT ON TABLE bot.adult_mc IS 'moderatecontent.com';
 
 
 
+CREATE SEQUENCE bot.civitai_img_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
 CREATE TABLE bot.civitai_img (
-    id public.u64 NOT NULL,
+    id public.u64 DEFAULT nextval('bot.civitai_img_id_seq'::regclass) NOT NULL,
     post_id public.u64 NOT NULL,
-    url text NOT NULL,
     sampler_id public.u64 NOT NULL,
     w public.u16 NOT NULL,
     h public.u16 NOT NULL,
@@ -145,7 +153,8 @@ CREATE TABLE bot.civitai_img (
     star public.u64 NOT NULL,
     hate public.u64 NOT NULL,
     cry public.u64 NOT NULL,
-    seed public.u64
+    seed public.u64,
+    url public.md5hash
 );
 
 
@@ -210,11 +219,43 @@ CREATE TABLE bot.civitai_user (
 
 
 
-CREATE TABLE bot.img_gpt (
+CREATE TABLE bot.img_man (
     id public.u64 NOT NULL,
-    name text NOT NULL,
-    txt text NOT NULL,
-    tag text NOT NULL
+    score_li public.u8[] NOT NULL,
+    box_li public.u16[] NOT NULL
+);
+
+
+
+CREATE TABLE bot.img_name (
+    id public.u64 NOT NULL,
+    val text NOT NULL
+);
+
+
+
+CREATE TABLE bot.img_obj (
+    id public.u64 NOT NULL,
+    tag_li public.u64[] NOT NULL,
+    score_li public.u8[] NOT NULL,
+    box_li public.u16[] NOT NULL
+);
+
+
+
+CREATE TABLE bot.img_tag (
+    id public.u64 NOT NULL,
+    tag_li public.u64[] NOT NULL,
+    score_li public.u8[] NOT NULL
+);
+
+
+
+CREATE TABLE bot.img_txt (
+    id public.u64 NOT NULL,
+    txt_li text[] NOT NULL,
+    score_li public.u8[] NOT NULL,
+    box_li public.u16[] NOT NULL
 );
 
 
@@ -222,7 +263,7 @@ CREATE TABLE bot.img_gpt (
 CREATE TABLE bot.meta (
     id bigint NOT NULL,
     val text NOT NULL,
-    hash bytea NOT NULL
+    hash public.md5hash
 );
 
 
@@ -237,26 +278,6 @@ CREATE SEQUENCE bot.meta_id_seq
 
 
 ALTER SEQUENCE bot.meta_id_seq OWNED BY bot.meta.id;
-
-
-
-CREATE TABLE bot.tag (
-    id public.u64 NOT NULL,
-    val text NOT NULL
-);
-
-
-
-CREATE SEQUENCE bot.tag_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-
-ALTER SEQUENCE bot.tag_id_seq OWNED BY bot.tag.id;
 
 
 
@@ -298,10 +319,6 @@ ALTER TABLE ONLY bot.civitai_model_log ALTER COLUMN id SET DEFAULT nextval('bot.
 
 
 ALTER TABLE ONLY bot.meta ALTER COLUMN id SET DEFAULT nextval('bot.meta_id_seq'::regclass);
-
-
-
-ALTER TABLE ONLY bot.tag ALTER COLUMN id SET DEFAULT nextval('bot.tag_id_seq'::regclass);
 
 
 
@@ -369,13 +386,28 @@ ALTER TABLE ONLY bot.civitai_user
 
 
 
-ALTER TABLE ONLY bot.img_gpt
-    ADD CONSTRAINT img_gpt_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY bot.img_man
+    ADD CONSTRAINT img_man_pkey PRIMARY KEY (id);
 
 
 
-ALTER TABLE ONLY bot.meta
-    ADD CONSTRAINT meta_hash_key UNIQUE (hash);
+ALTER TABLE ONLY bot.img_name
+    ADD CONSTRAINT img_name_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY bot.img_obj
+    ADD CONSTRAINT img_obj_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY bot.img_tag
+    ADD CONSTRAINT img_tag_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY bot.img_txt
+    ADD CONSTRAINT img_txt_pkey PRIMARY KEY (id);
 
 
 
@@ -384,18 +416,16 @@ ALTER TABLE ONLY bot.meta
 
 
 
-ALTER TABLE ONLY bot.tag
-    ADD CONSTRAINT tag_pkey PRIMARY KEY (id);
-
-
-
-ALTER TABLE ONLY bot.tag
-    ADD CONSTRAINT tag_val_key UNIQUE (val);
-
-
-
 ALTER TABLE ONLY bot.task
     ADD CONSTRAINT task_pkey PRIMARY KEY (id);
+
+
+
+CREATE UNIQUE INDEX "civitai_img.url" ON bot.civitai_img USING btree (url);
+
+
+
+CREATE UNIQUE INDEX "meta.hash" ON bot.meta USING btree (hash);
 
 
 
