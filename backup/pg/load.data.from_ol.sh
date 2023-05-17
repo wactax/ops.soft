@@ -14,7 +14,7 @@ fi
 load_schema() {
   psql postgres://$1 -c "DROP SCHEMA $2 CASCADE" || true
   psql postgres://$1 <./dump/art-ol/art-ol/table/$2.sql
-  zstd -qcd ./data/art-ol/$2.zstd | pg_restore -d "postgres://$1"
+  zstd -qcd ./data/art-ol/$2.zstd | pg_restore --disable-triggers -d "postgres://$1"
 }
 
 load() {
