@@ -5,11 +5,11 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0
   '@alicloud/cdn20180510':
-    specifier: ^1.2.6
-    version: 1.2.6
+    specifier: ^1.2.9
+    version: 1.2.9
   '@alicloud/openapi-client':
-    specifier: ^0.4.5
-    version: 0.4.5
+    specifier: ^0.4.6
+    version: 0.4.6
   '@alicloud/tea-util':
     specifier: ^1.4.5
     version: 1.4.5
@@ -30,11 +30,11 @@ packages:
       - supports-color
     dev: false
 
-  /@alicloud/cdn20180510@1.2.6:
-    resolution: {integrity: sha512-Boe52rZr4sNzdvpdsh7a/mZULj5TVFvbBSZ/BAYTfxT6IPOtlMVY0Wkze0ca89c7tOqTh/jO5RYIU+SdII0Siw==}
+  /@alicloud/cdn20180510@1.2.9:
+    resolution: {integrity: sha512-w40NVlT1jZcqb5lrKwI4DC/znKr1N8JyMFwERjUnv1bgcX3GZrEtn2UZcU9YxAKePslfrlbIEyDWp09JAfNtEg==}
     dependencies:
       '@alicloud/endpoint-util': 0.0.1
-      '@alicloud/openapi-client': 0.4.5
+      '@alicloud/openapi-client': 0.4.6
       '@alicloud/openapi-util': 0.3.1
       '@alicloud/tea-typescript': 1.8.0
       '@alicloud/tea-util': 1.4.5
@@ -82,8 +82,8 @@ packages:
       - supports-color
     dev: false
 
-  /@alicloud/openapi-client@0.4.5:
-    resolution: {integrity: sha512-x1blwhfPOVkH/JCLWFssFRWDL0C75RToun9AwhNV+84gqJB2/GUipm3quHGLon8JiQ0DQ9YBUho2rukSoAvhJQ==}
+  /@alicloud/openapi-client@0.4.6:
+    resolution: {integrity: sha512-cyhUQOJehLRslHy2l+lsginiyXdzfV7yF7b9EJcxzGG7zHAEX0XF3OJvfo13n7WgiqCzt9suQBatJz7b5F+14A==}
     dependencies:
       '@alicloud/credentials': 2.2.6
       '@alicloud/gateway-spi': 0.0.8
