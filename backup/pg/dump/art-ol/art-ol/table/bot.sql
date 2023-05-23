@@ -16,29 +16,6 @@ CREATE SCHEMA bot;
 
 
 
-CREATE FUNCTION bot.get_task(col text, n public.u64) RETURNS TABLE(id public.u64, hash public.md5hash)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    RETURN QUERY EXECUTE 'UPDATE bot.task SET '||col||E'=floor(date_part(\'epoch\', now())) FROM ( SELECT id,hash FROM bot.task WHERE hash IS NOT NULL AND '||col|| '=0 ORDER BY priority DESC LIMIT '||n||') AS t WHERE bot.task.id=t.id RETURNING t.*';
-END;
-$$;
-
-
-
-CREATE FUNCTION bot.timeout_task(col text, n public.u64, timeout public.u64) RETURNS TABLE(id public.u64, hash public.md5hash)
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    now u64;
-BEGIN
-    now := floor(date_part('epoch', now()));
-    RETURN QUERY EXECUTE 'UPDATE bot.task SET err=err+1,'||col||'='||now||' FROM ( SELECT id,hash FROM bot.task WHERE err<10 AND '||col||'>0 AND '||col|| '<'||now-timeout||' ORDER BY priority DESC LIMIT '||n||') AS t WHERE bot.task.id=t.id RETURNING t.*';
-END;
-$$;
-
-
-
 CREATE FUNCTION bot.trigger_civitai_img() RETURNS trigger
     LANGUAGE plpgsql
     AS $$BEGIN
@@ -60,14 +37,11 @@ SET default_table_access_method = heap;
 
 CREATE TABLE bot.adult (
     id public.u64 NOT NULL,
-    google public.i8 DEFAULT (OPERATOR(public.-) (1)::public.i8) NOT NULL,
-    mc public.i8 DEFAULT (OPERATOR(public.-) (1)::public.i8) NOT NULL,
-    hw public.i8 DEFAULT '-1'::integer NOT NULL,
     baidu public.i8 DEFAULT '-1'::integer NOT NULL,
-    deepai public.i8 DEFAULT '-1'::integer NOT NULL,
-    nsfwjs public.i8 DEFAULT '-1'::integer NOT NULL,
+    hw public.i8 DEFAULT '-1'::integer NOT NULL,
+    pd public.i8 DEFAULT '-1'::integer NOT NULL,
     nudenet public.i8 DEFAULT '-1'::integer NOT NULL,
-    pd public.i8 DEFAULT '-1'::integer NOT NULL
+    nsfwjs public.i8 DEFAULT '-1'::integer NOT NULL
 );
 
 
@@ -147,14 +121,14 @@ CREATE TABLE bot.civitai_img (
     prompt_id public.u64,
     nprompt_id public.u64,
     meta_id public.u64,
-    model_name_hash_id public.u64,
     genway_id public.u64,
     laugh public.u64 NOT NULL,
     star public.u64 NOT NULL,
     hate public.u64 NOT NULL,
     cry public.u64 NOT NULL,
     seed public.u64,
-    url public.md5hash
+    url public.md5hash,
+    res_group_id public.u64
 );
 
 
@@ -286,13 +260,12 @@ CREATE TABLE bot.task (
     hash public.md5hash,
     cid public.u8 NOT NULL,
     rid public.u64 NOT NULL,
-    err public.u8 DEFAULT 0 NOT NULL,
     priority public.u8 DEFAULT 0,
     face public.u64 DEFAULT 0,
     txt public.u64 DEFAULT 0,
     qdrant public.u64 DEFAULT 0,
-    adult public.u64 DEFAULT 0,
-    gorse public.u64 DEFAULT 0
+    gorse public.u64 DEFAULT 0,
+    adult public.i8 DEFAULT '-1'::integer NOT NULL
 );
 
 
@@ -408,6 +381,11 @@ ALTER TABLE ONLY bot.img_tag
 
 ALTER TABLE ONLY bot.img_txt
     ADD CONSTRAINT img_txt_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY bot.meta
+    ADD CONSTRAINT meta_hash_key UNIQUE (hash);
 
 
 
