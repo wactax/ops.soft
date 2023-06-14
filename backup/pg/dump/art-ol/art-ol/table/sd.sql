@@ -28,7 +28,8 @@ CREATE TABLE sd.checkpoint (
     down public.u64 NOT NULL,
     ctime public.u64 DEFAULT (date_part('epoch'::text, now()))::bigint NOT NULL,
     utime public.u64 DEFAULT (date_part('epoch'::text, now()))::bigint NOT NULL,
-    uid public.u64 NOT NULL
+    uid public.u64 NOT NULL,
+    nsfw public.i8 DEFAULT '-1'::integer NOT NULL
 );
 
 
@@ -52,7 +53,7 @@ CREATE TABLE sd.checkpoint_ver (
     checkpoint_id public.u64 NOT NULL,
     rid public.u64 NOT NULL,
     "time" public.u64 DEFAULT (date_part('epoch'::text, now()))::bigint NOT NULL,
-    down public.u64 NOT NULL
+    down public.u64 DEFAULT 0 NOT NULL
 );
 
 
@@ -96,6 +97,26 @@ ALTER SEQUENCE sd.checkpoint_ver_id_seq OWNED BY sd.checkpoint_ver.id;
 
 
 
+CREATE TABLE sd.kind (
+    id bigint NOT NULL,
+    val bit varying(255) NOT NULL
+);
+
+
+
+CREATE SEQUENCE sd.kind_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+ALTER SEQUENCE sd.kind_id_seq OWNED BY sd.kind.id;
+
+
+
 CREATE TABLE sd."user" (
     id public.u64 NOT NULL,
     cid public.u16 NOT NULL,
@@ -130,6 +151,10 @@ ALTER TABLE ONLY sd.checkpoint_ver_file ALTER COLUMN id SET DEFAULT nextval('sd.
 
 
 
+ALTER TABLE ONLY sd.kind ALTER COLUMN id SET DEFAULT nextval('sd.kind_id_seq'::regclass);
+
+
+
 ALTER TABLE ONLY sd."user" ALTER COLUMN id SET DEFAULT nextval('sd.user_id_seq'::regclass);
 
 
@@ -151,6 +176,11 @@ ALTER TABLE ONLY sd.checkpoint_ver_file
 
 ALTER TABLE ONLY sd.checkpoint_ver
     ADD CONSTRAINT checkpoint_ver_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY sd.kind
+    ADD CONSTRAINT kind_pkey PRIMARY KEY (id);
 
 
 
