@@ -8,32 +8,7 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-ALTER TABLE IF EXISTS ONLY os DROP CONSTRAINT IF EXISTS os_pkey;
-ALTER TABLE IF EXISTS ONLY os DROP CONSTRAINT IF EXISTS "os.name.ver";
-ALTER TABLE IF EXISTS ONLY device DROP CONSTRAINT IF EXISTS device_model_pkey;
-ALTER TABLE IF EXISTS ONLY device DROP CONSTRAINT IF EXISTS "device.vendor.model";
-ALTER TABLE IF EXISTS ONLY client_meta DROP CONSTRAINT IF EXISTS client_meta_pkey;
-ALTER TABLE IF EXISTS ONLY client_ip DROP CONSTRAINT IF EXISTS client_ip_pkey;
-ALTER TABLE IF EXISTS ONLY client_ip DROP CONSTRAINT IF EXISTS "client_ip.ctime";
-ALTER TABLE IF EXISTS ONLY browser DROP CONSTRAINT IF EXISTS browser_pkey;
-ALTER TABLE IF EXISTS ONLY browser DROP CONSTRAINT IF EXISTS "browser.name.ver";
-ALTER TABLE IF EXISTS os ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS client_meta ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS client_ip ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS browser ALTER COLUMN id DROP DEFAULT;
-DROP SEQUENCE IF EXISTS os_id_seq;
-DROP TABLE IF EXISTS os;
-DROP TABLE IF EXISTS device;
-DROP SEQUENCE IF EXISTS device_id_seq;
-DROP SEQUENCE IF EXISTS client_meta_id_seq;
-DROP TABLE IF EXISTS client_meta;
-DROP SEQUENCE IF EXISTS client_ip_id_seq;
-DROP TABLE IF EXISTS client_ip;
-DROP SEQUENCE IF EXISTS browser_id_seq;
-DROP TABLE IF EXISTS browser;
-DROP FUNCTION IF EXISTS drop_func(_name text, OUT functions_dropped integer);
-DROP FUNCTION IF EXISTS client_new(client_id u64, ip bytea, browser_name character varying, browser_ver u32, os_name character varying, os_ver u32, device_vendor character varying, device_model character varying);
-CREATE SCHEMA public;
+CREATE SCHEMA IF NOT EXISTS public;
 SET search_path TO public;
 COMMENT ON SCHEMA public IS 'standard public schema';
 CREATE OR REPLACE FUNCTION client_new(client_id u64, ip bytea, browser_name character varying, browser_ver u32, os_name character varying, os_ver u32, device_vendor character varying, device_model character varying) RETURNS void
@@ -123,32 +98,32 @@ END
 $$;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE browser (
+CREATE TABLE IF NOT EXISTS browser (
     id u32 NOT NULL,
     name character varying(255) NOT NULL,
     ver u32 NOT NULL
 );
-CREATE SEQUENCE browser_id_seq
+CREATE SEQUENCE IF NOT EXISTS browser_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 ALTER SEQUENCE browser_id_seq OWNED BY browser.id;
-CREATE TABLE client_ip (
+CREATE TABLE IF NOT EXISTS client_ip (
     id u64 NOT NULL,
     client_id u64 NOT NULL,
     ip bytea NOT NULL,
     ctime u64 DEFAULT ceil(date_part('epoch'::text, now())) NOT NULL
 );
-CREATE SEQUENCE client_ip_id_seq
+CREATE SEQUENCE IF NOT EXISTS client_ip_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 ALTER SEQUENCE client_ip_id_seq OWNED BY client_ip.id;
-CREATE TABLE client_meta (
+CREATE TABLE IF NOT EXISTS client_meta (
     id u64 NOT NULL,
     device_id u32 NOT NULL,
     browser_id u32 NOT NULL,
@@ -156,30 +131,30 @@ CREATE TABLE client_meta (
     client_id u64 NOT NULL,
     ctime u64 DEFAULT ceil(date_part('epoch'::text, now())) NOT NULL
 );
-CREATE SEQUENCE client_meta_id_seq
+CREATE SEQUENCE IF NOT EXISTS client_meta_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 ALTER SEQUENCE client_meta_id_seq OWNED BY client_meta.id;
-CREATE SEQUENCE device_id_seq
+CREATE SEQUENCE IF NOT EXISTS device_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-CREATE TABLE device (
+CREATE TABLE IF NOT EXISTS device (
     id u32 DEFAULT nextval('device_id_seq'::regclass) NOT NULL,
     vendor character varying(255) NOT NULL,
     model character varying(255) NOT NULL
 );
-CREATE TABLE os (
+CREATE TABLE IF NOT EXISTS os (
     id u64 NOT NULL,
     name character varying(255) NOT NULL,
     ver u32 NOT NULL
 );
-CREATE SEQUENCE os_id_seq
+CREATE SEQUENCE IF NOT EXISTS os_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
