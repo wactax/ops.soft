@@ -10,20 +10,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 CREATE SCHEMA auth_mail;
 SET search_path TO auth_mail;
-CREATE OR REPLACE FUNCTION mail_set(mail_id public.u64, uid public.u64) RETURNS void
+CREATE OR REPLACE FUNCTION auth_mail.mail_set(mail_id public.u64, uid public.u64) RETURNS void
     LANGUAGE plpgsql
     AS $$
 BEGIN
-  DELETE FROM user
+  DELETE FROM auth_mail.user
   WHERE val = uid;
-INSERT INTO user
+INSERT INTO auth_mail.user
     VALUES (mail_id, uid)
   ON CONFLICT (id)
     DO UPDATE SET
       val = uid;
 END
 $$;
-CREATE OR REPLACE FUNCTION signup(client_id public.u64, mail_id public.u64, ctime public.u64, password_hash bytea) RETURNS public.u64
+CREATE OR REPLACE FUNCTION auth_mail.signup(client_id public.u64, mail_id public.u64, ctime public.u64, password_hash bytea) RETURNS public.u64
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -33,11 +33,11 @@ user_id u64;
 BEGIN
   -- JS_RETURN [0][0]
   SELECT val INTO user_id
-  FROM user
+  FROM auth_mail.user
   WHERE id = mail_id;
 IF user_id IS NULL THEN
     SELECT nextval('u.uid'::regclass) INTO user_id;
-INSERT INTO user
+INSERT INTO auth_mail.user
       VALUES (mail_id, user_id);
 END IF;
 INSERT INTO u.log(action, client_id, uid, ctime, val)
@@ -51,7 +51,7 @@ INSERT INTO u.password
 RETURN user_id;
 END
 $$;
-CREATE OR REPLACE FUNCTION uid_by_mail_id(mail_id public.u64) RETURNS TABLE(user_id public.u64, hash bytea, ctime public.u64)
+CREATE OR REPLACE FUNCTION auth_mail.uid_by_mail_id(mail_id public.u64) RETURNS TABLE(user_id public.u64, hash bytea, ctime public.u64)
     LANGUAGE plpgsql
     AS $$
 DECLARE
@@ -60,7 +60,7 @@ password_hash bytea;
 BEGIN
   -- JS_RETURN [0]
   SELECT val INTO user_id
-  FROM user
+  FROM auth_mail.user
   WHERE id = mail_id;
 IF user_id IS NOT NULL THEN
     RETURN QUERY
@@ -70,7 +70,7 @@ IF user_id IS NOT NULL THEN
 END IF;
 END
 $$;
-CREATE SEQUENCE user_id_seq
+CREATE SEQUENCE auth_mail.user_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -78,9 +78,9 @@ CREATE SEQUENCE user_id_seq
     CACHE 1;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE "user" (
-    id public.u64 DEFAULT nextval('user_id_seq'::regclass) NOT NULL,
+CREATE TABLE auth_mail."user" (
+    id public.u64 DEFAULT nextval('auth_mail.user_id_seq'::regclass) NOT NULL,
     val public.u64 NOT NULL
 );
-ALTER TABLE ONLY "user"
+ALTER TABLE ONLY auth_mail."user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);

@@ -8,38 +8,48 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-CREATE SCHEMA IF NOT EXISTS u;
-SET search_path TO u,public;
+ALTER TABLE IF EXISTS ONLY u.password DROP CONSTRAINT IF EXISTS password_pkey;
+ALTER TABLE IF EXISTS ONLY u.log DROP CONSTRAINT IF EXISTS log_pkey;
+ALTER TABLE IF EXISTS u.password ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS u.log ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS u.uid;
+DROP SEQUENCE IF EXISTS u.password_id_seq;
+DROP TABLE IF EXISTS u.password;
+DROP SEQUENCE IF EXISTS u.log_id_seq;
+DROP TABLE IF EXISTS u.log;
+DROP SCHEMA IF EXISTS u;
+CREATE SCHEMA u;
+SET search_path TO u;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE IF NOT EXISTS u.log (
-    id u64 NOT NULL,
-    action u16 NOT NULL,
-    uid u64 NOT NULL,
+CREATE TABLE u.log (
+    id public.u64 NOT NULL,
+    action public.u16 NOT NULL,
+    uid public.u64 NOT NULL,
     val bytea DEFAULT '\x'::bytea NOT NULL,
-    ctime u64 DEFAULT ceil(date_part('epoch'::text, now())) NOT NULL,
-    client_id u64 NOT NULL
+    ctime public.u64 DEFAULT ceil(date_part('epoch'::text, now())) NOT NULL,
+    client_id public.u64 NOT NULL
 );
-CREATE SEQUENCE IF NOT EXISTS u.log_id_seq
+CREATE SEQUENCE u.log_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 ALTER SEQUENCE u.log_id_seq OWNED BY u.log.id;
-CREATE TABLE IF NOT EXISTS u.password (
-    id u64 NOT NULL,
-    hash md5hash NOT NULL,
-    ctime u64 NOT NULL
+CREATE TABLE u.password (
+    id public.u64 NOT NULL,
+    hash public.md5hash NOT NULL,
+    ctime public.u64 NOT NULL
 );
-CREATE SEQUENCE IF NOT EXISTS u.password_id_seq
+CREATE SEQUENCE u.password_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 ALTER SEQUENCE u.password_id_seq OWNED BY u.password.id;
-CREATE SEQUENCE IF NOT EXISTS u.uid
+CREATE SEQUENCE u.uid
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE

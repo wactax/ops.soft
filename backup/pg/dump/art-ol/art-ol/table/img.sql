@@ -12,88 +12,88 @@ CREATE SCHEMA img;
 SET search_path TO img;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE genway (
+CREATE TABLE img.genway (
     id public.u32 NOT NULL,
     name text NOT NULL
 );
-CREATE SEQUENCE genway_id_seq
+CREATE SEQUENCE img.genway_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE genway_id_seq OWNED BY genway.id;
-CREATE TABLE nprompt (
+ALTER SEQUENCE img.genway_id_seq OWNED BY img.genway.id;
+CREATE TABLE img.nprompt (
     id public.u64 NOT NULL,
     val text NOT NULL,
     hash public.md5hash NOT NULL
 );
-CREATE SEQUENCE nprompt_id_seq
+CREATE SEQUENCE img.nprompt_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE nprompt_id_seq OWNED BY nprompt.id;
-CREATE TABLE prompt (
+ALTER SEQUENCE img.nprompt_id_seq OWNED BY img.nprompt.id;
+CREATE TABLE img.prompt (
     id public.u64 NOT NULL,
     val text NOT NULL,
     hash public.md5hash NOT NULL
 );
-CREATE SEQUENCE prompt_id_seq
+CREATE SEQUENCE img.prompt_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE prompt_id_seq OWNED BY prompt.id;
-CREATE TABLE sampler (
+ALTER SEQUENCE img.prompt_id_seq OWNED BY img.prompt.id;
+CREATE TABLE img.sampler (
     id public.u32 NOT NULL,
     name text NOT NULL
 );
-CREATE SEQUENCE sampler_id_seq
+CREATE SEQUENCE img.sampler_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE sampler_id_seq OWNED BY sampler.id;
-CREATE TABLE tag_en (
+ALTER SEQUENCE img.sampler_id_seq OWNED BY img.sampler.id;
+CREATE TABLE img.tag_en (
     id bigint NOT NULL,
     val text NOT NULL
 );
-CREATE SEQUENCE tag_en_id_seq
+CREATE SEQUENCE img.tag_en_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE tag_en_id_seq OWNED BY tag_en.id;
-ALTER TABLE ONLY genway ALTER COLUMN id SET DEFAULT nextval('genway_id_seq'::regclass);
-ALTER TABLE ONLY nprompt ALTER COLUMN id SET DEFAULT nextval('nprompt_id_seq'::regclass);
-ALTER TABLE ONLY prompt ALTER COLUMN id SET DEFAULT nextval('prompt_id_seq'::regclass);
-ALTER TABLE ONLY sampler ALTER COLUMN id SET DEFAULT nextval('sampler_id_seq'::regclass);
-ALTER TABLE ONLY tag_en ALTER COLUMN id SET DEFAULT nextval('tag_en_id_seq'::regclass);
-ALTER TABLE ONLY genway
+ALTER SEQUENCE img.tag_en_id_seq OWNED BY img.tag_en.id;
+ALTER TABLE ONLY img.genway ALTER COLUMN id SET DEFAULT nextval('img.genway_id_seq'::regclass);
+ALTER TABLE ONLY img.nprompt ALTER COLUMN id SET DEFAULT nextval('img.nprompt_id_seq'::regclass);
+ALTER TABLE ONLY img.prompt ALTER COLUMN id SET DEFAULT nextval('img.prompt_id_seq'::regclass);
+ALTER TABLE ONLY img.sampler ALTER COLUMN id SET DEFAULT nextval('img.sampler_id_seq'::regclass);
+ALTER TABLE ONLY img.tag_en ALTER COLUMN id SET DEFAULT nextval('img.tag_en_id_seq'::regclass);
+ALTER TABLE ONLY img.genway
     ADD CONSTRAINT genway_name_key UNIQUE (name);
-ALTER TABLE ONLY genway
+ALTER TABLE ONLY img.genway
     ADD CONSTRAINT genway_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY nprompt
+ALTER TABLE ONLY img.nprompt
     ADD CONSTRAINT nprompt_hash_key UNIQUE (hash);
-ALTER TABLE ONLY nprompt
+ALTER TABLE ONLY img.nprompt
     ADD CONSTRAINT nprompt_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY prompt
+ALTER TABLE ONLY img.prompt
     ADD CONSTRAINT prompt_hash_key UNIQUE (hash);
-ALTER TABLE ONLY prompt
+ALTER TABLE ONLY img.prompt
     ADD CONSTRAINT prompt_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY sampler
+ALTER TABLE ONLY img.sampler
     ADD CONSTRAINT sampler_name_key UNIQUE (name);
-ALTER TABLE ONLY sampler
+ALTER TABLE ONLY img.sampler
     ADD CONSTRAINT sampler_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY tag_en
+ALTER TABLE ONLY img.tag_en
     ADD CONSTRAINT tag_en_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY tag_en
+ALTER TABLE ONLY img.tag_en
     ADD CONSTRAINT tag_en_val_key UNIQUE (val);
-CREATE UNIQUE INDEX "nprompt.hash" ON nprompt USING btree (hash);
-CREATE UNIQUE INDEX "prompt.hash" ON prompt USING btree (hash);
+CREATE UNIQUE INDEX "nprompt.hash" ON img.nprompt USING btree (hash);
+CREATE UNIQUE INDEX "prompt.hash" ON img.prompt USING btree (hash);

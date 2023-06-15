@@ -12,19 +12,19 @@ CREATE SCHEMA tag;
 SET search_path TO tag;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE tag (
+CREATE TABLE tag.tag (
     id bigint NOT NULL,
     val text NOT NULL
 );
-CREATE SEQUENCE tag_id_seq
+CREATE SEQUENCE tag.tag_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER SEQUENCE tag_id_seq OWNED BY id;
-ALTER TABLE ONLY tag ALTER COLUMN id SET DEFAULT nextval('tag_id_seq'::regclass);
-ALTER TABLE ONLY tag
+ALTER SEQUENCE tag.tag_id_seq OWNED BY tag.tag.id;
+ALTER TABLE ONLY tag.tag ALTER COLUMN id SET DEFAULT nextval('tag.tag_id_seq'::regclass);
+ALTER TABLE ONLY tag.tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY tag
+ALTER TABLE ONLY tag.tag
     ADD CONSTRAINT tag_val_key UNIQUE (val);
