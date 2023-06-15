@@ -1,5 +1,3 @@
-
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -10,17 +8,11 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
-
 CREATE SCHEMA u;
-
-
+SET search_path TO u;
 SET default_tablespace = '';
-
 SET default_table_access_method = heap;
-
-
-CREATE TABLE u.log (
+CREATE TABLE log (
     id public.u64 NOT NULL,
     action public.u16 NOT NULL,
     uid public.u64 NOT NULL,
@@ -28,67 +20,34 @@ CREATE TABLE u.log (
     ctime public.u64 DEFAULT ceil(date_part('epoch'::text, now())) NOT NULL,
     client_id public.u64 NOT NULL
 );
-
-
-
-CREATE SEQUENCE u.log_id_seq
+CREATE SEQUENCE log_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-
-ALTER SEQUENCE u.log_id_seq OWNED BY u.log.id;
-
-
-
-CREATE TABLE u.password (
+ALTER SEQUENCE log_id_seq OWNED BY log.id;
+CREATE TABLE password (
     id public.u64 NOT NULL,
     hash public.md5hash NOT NULL,
     ctime public.u64 NOT NULL
 );
-
-
-
-CREATE SEQUENCE u.password_id_seq
+CREATE SEQUENCE password_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-
-ALTER SEQUENCE u.password_id_seq OWNED BY u.password.id;
-
-
-
-CREATE SEQUENCE u.uid
+ALTER SEQUENCE password_id_seq OWNED BY password.id;
+CREATE SEQUENCE uid
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-
-ALTER TABLE ONLY u.log ALTER COLUMN id SET DEFAULT nextval('u.log_id_seq'::regclass);
-
-
-
-ALTER TABLE ONLY u.password ALTER COLUMN id SET DEFAULT nextval('u.password_id_seq'::regclass);
-
-
-
-ALTER TABLE ONLY u.log
+ALTER TABLE ONLY log ALTER COLUMN id SET DEFAULT nextval('log_id_seq'::regclass);
+ALTER TABLE ONLY password ALTER COLUMN id SET DEFAULT nextval('password_id_seq'::regclass);
+ALTER TABLE ONLY log
     ADD CONSTRAINT log_pkey PRIMARY KEY (id);
-
-
-
-ALTER TABLE ONLY u.password
+ALTER TABLE ONLY password
     ADD CONSTRAINT password_pkey PRIMARY KEY (id);
-
-
-

@@ -5,13 +5,19 @@
   @w5/write
   @w5/read
   @w5/pg/PG > LI0
-  path > join
+  path > join dirname
 
-ROOT = uridir(import.meta)
+ROOT = dirname uridir(import.meta)
 
-{PG_URI} = process.env
+{PG_URI,BACKUP} = process.env
 
-DATA = join(ROOT, 'dump')
+DATA = BACKUP or join(ROOT, 'dump')
+if not PG_URI
+  throw new Error 'miss PG_URI'
+
+li = PG_URI.split('/')
+
+export DATA = join DATA,li[0].split(':')[0]+'/'+li.pop().split('?')[0]
 
 _dump = (schema,args,dir)=>
   sql = "#{DATA}/#{dir}/#{schema}.sql"
@@ -34,14 +40,6 @@ dump = (schema)=>
 
 < default main = =>
 
-  if not PG_URI
-    console.log 'miss PG_URI'
-    return
-
-  li = PG_URI.split('/')
-
-
-  DATA = join DATA,li[0].split(':')[0]+'/'+li.pop().split('?')[0]
 
   await Promise.all [
     $"mkdir -p #{DATA}/table"

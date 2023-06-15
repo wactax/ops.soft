@@ -6,11 +6,9 @@
   @w5/read
   @w5/write
   postgres
+  ./table:@ > DATA
   fs/promises > rename readFile opendir
 
-ENV = process.env
-BACKUP_TABLE = ENV.BACKUP or '/mnt/backup/pg'
-ROOT = dirname uridir(import.meta)
 
 bucket='sj-backup:backup'
 
@@ -32,7 +30,7 @@ rmOutdate = =>
 dump = (uri)=>
   if not uri
     return
-  db = uri.split('?')[0].split('/').pop()
+  await table()
   q = await postgres(
     'postgres://'+uri
   )
@@ -42,9 +40,9 @@ dump = (uri)=>
       continue
     await Promise.all [
       do =>
-        await $"#{ROOT}/table.sh #{uri} #{schema_name}"
+
         for kind from ['table','drop']
-          fp = "#{BACKUP_TABLE}/#{db}/#{kind}/#{schema_name}.sql"
+          fp = "#{DATA}/#{kind}/#{schema_name}.sql"
             # .replaceAll('CREATE SCHEMA ','CREATE SCHEMA IF NOT EXISTS ')
           sql = read(fp)
             .replaceAll('CREATE FUNCTION ','CREATE OR REPLACE FUNCTION ')
@@ -71,9 +69,9 @@ dump = (uri)=>
 
 
 await Promise.all [
-  ENV.PG_URI
+  process.env.PG_URI
 ].map dump
 
-cd BACKUP_TABLE
+cd DATA
 await $'gitsync'
 process.exit()
