@@ -52,7 +52,7 @@ dump = (uri)=>
               /CREATE SCHEMA .*/g
               (t)=>
                 t+'\nSET search_path TO '+schema_name+';\n'
-            ).replaceAll(schema_name+'.','').split('\n').filter(
+            ).split('\n').filter(
             (i)=>
               if not i
                 return false

@@ -10,7 +10,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 CREATE SCHEMA tag;
 SET search_path TO tag;
-CREATE SEQUENCE tag_id_seq
+CREATE SEQUENCE tag.tag_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -18,11 +18,11 @@ CREATE SEQUENCE tag_id_seq
     CACHE 1;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
-CREATE TABLE tag (
-    id bigint DEFAULT nextval('tag_id_seq'::regclass) NOT NULL,
+CREATE TABLE tag.tag (
+    id bigint DEFAULT nextval('tag.tag_id_seq'::regclass) NOT NULL,
     val text NOT NULL
 );
-ALTER TABLE ONLY tag
+ALTER TABLE ONLY tag.tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (id);
-ALTER TABLE ONLY tag
+ALTER TABLE ONLY tag.tag
     ADD CONSTRAINT tag_val_key UNIQUE (val);
