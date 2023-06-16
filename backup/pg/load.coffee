@@ -27,6 +27,7 @@ if not ( PG_URI and PG_URI.endsWith '-dev' )
     if schema != 'public'
       await sh """#{psql} -c "DROP SCHEMA #{schema} CASCADE" || true"""
     await sh "#{psql} < #{sql}"
+    await sh "zstd -qcd #{ROOT}/data/art-ol/#{schema}.zstd | pg_restore --disable-triggers -d 'postgres://#{PG_URI}'"
   return
 
 if process.argv[1] == decodeURI (new URL(import.meta.url)).pathname
