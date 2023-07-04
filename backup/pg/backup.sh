@@ -7,4 +7,4 @@ set -o allexport
 source ./.env
 set +o allexport
 ./src/main.coffee
-# ./data.coffee
+./data.coffee
