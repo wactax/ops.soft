@@ -6,4 +6,5 @@ cd $DIR
 set -o allexport
 source ./.env
 set +o allexport
-./data.coffee
+./src/main.coffee
+# ./data.coffee
